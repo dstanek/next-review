@@ -13,7 +13,10 @@
 from __future__ import print_function
 
 import argparse
-import ConfigParser
+try:
+    import ConfigParser as configparser
+except ImportError:
+    import configparser
 import getpass
 import json
 import os
@@ -128,7 +131,7 @@ def ignore_all_downvotes(reviews):
     filtered_reviews = []
     for review in reviews:
         votes = votes_by_name(review)
-        values = set(votes.itervalues())
+        values = set(votes.values())
         if not set((-1, -2)) & values:
             filtered_reviews.append(review)
     return filtered_reviews
@@ -148,7 +151,7 @@ def ignore_my_good_reviews(reviews, username=None, email=None):
     """Ignore reviews created by me unless they need my attention."""
     filtered_reviews = []
     for review in reviews:
-        vote_values = set(votes_by_name(review).itervalues())
+        vote_values = set(votes_by_name(review).values())
         if _name(review['owner']) not in (username, email):
             # either it's not our own review
             filtered_reviews.append(review)
@@ -231,7 +234,7 @@ def get_config():
 
     option_dict = {opt.dest: opt for opt in options}
     args = parser.parse_args()
-    config_parser = ConfigParser.ConfigParser()
+    config_parser = configparser.ConfigParser()
     try:
         with open(args.config_file, 'r') as cfg:
             config_parser.readfp(cfg)
